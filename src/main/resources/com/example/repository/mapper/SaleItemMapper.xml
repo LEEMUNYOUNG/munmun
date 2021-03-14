@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.SaleItemMapper">
+  <cache />
+  
+  <!-- 일반상품인 item 검색 (categoryid로 검색) -->
+  <select id="getItemListByCategory" resultType="com.example.sproute.domain.Item">
+     SELECT ITEMID, PRODUCTID, CATEGORYID, PRICE, STOCK, TITLE, DESCRIPTION, ADDDATE, IMGNAME
+     FROM ITEM
+     WHERE CATEGORYID=#{categoryId}
+  </select>
+  
+  <!-- ProductId(유모차,장난감,옷 등)로 item리스트  -->
+   <select id="getItemListByProduct" resultType="Item">
+    SELECT
+      I.ITEMID,
+      I.CATEGORYID,
+      I.PRICE,
+      I.STOCK,
+      I.TITLE,
+      I.DESCRIPTION,
+      I.ADDDATE,
+      I.IMGNAME,
+      P.PRODUCTID,
+      P.NAME
+    FROM ITEM I, PRODUCT P
+    WHERE P.PRODUCTID = I.PRODUCTID AND I.CATEGORYID = #{categoryId} AND I.PRODUCTID = #{productId}
+  </select>
+
+<!-- itemid로 item검색 -->
+  <select id="getItem" resultType="Item">
+    SELECT
+      ITEMID,
+      PRICE,
+      STOCK,
+      TITLE,
+      DESCRIPTION,
+      ADDDATE,
+      CATEGORYID,
+      PRODUCTID,
+      IMGNAME
+    FROM ITEM
+    WHERE ITEMID = #{value}
+  </select>  
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.sproute.dao.mybatis.mapper.ItemMapper">
+  <cache />
+  
+  <!-- 일반상품인 Item검색 *Item에 categoryid가 없어서 불가능...?  -->
+  <select id="getItemListByCategory" resultType="Item">
+  	SELECT
+  	FROM ITEM I, PRODUCT P
+  	WHERE 
+  </select>
+  
+  <!-- ProductId(유모차,장난감,옷 등)로 item리스트  -->
+   <select id="getItemListByProduct" resultType="Item">
+    SELECT
+      I.ITEMID,
+      I.PRODUCTID,
+      I.PRICE,
+      I.STOCK,
+      I.TITLE,
+      I.DESCRIPTION,
+      I.ADDDATE,
+      P.PRODUCTID,
+      P.NAME
+    FROM ITEM I, PRODUCT P
+    WHERE P.PRODUCTID = I.PRODUCTID
+      AND I.PRODUCTID = #{value}
+  </select>
+
+<!-- itemid로 item검색 -->
+  <select id="getItem" resultType="Item">
+    SELECT
+     I.ITEMID,
+      I.PRODUCTID,
+      I.PRICE,
+      I.STOCK,
+      I.TITLE,
+      I.DESCRIPTION,
+      I.ADDDATE,
+    FROM ITEM
+    WHERE ITEM.ITEMID = #{value}
+  </select>  
+</mapper>

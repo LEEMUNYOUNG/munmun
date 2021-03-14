@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.MyPageAuctionMapper">
+  <cache />
+  
+  <!-- 회원이 등록한 경매 아이템 리스트I.CATEGORYID AS "item.categoryId", -->
+<!--  <select id="getUserAuctionListByUserId" resultType="Auction"> -->
+<!--   		SELECT I.ITEMID AS "item.itemId",  -->
+<!--   				I.PRODUCTID AS "item.productId", -->
+<!--   				I.CATEGORYID AS "item.categoryId", -->
+<!--   				I.price AS "item.price", -->
+<!--   				I.stock AS "item.stock", -->
+<!--   				I.title AS "item.title", -->
+<!--   				I.DESCRIPTION AS "item.description", -->
+<!--   				I.ADDDATE AS "item.addDate", -->
+<!--   				A.sellerId, A.participant, A.deadline, A.auctionId, A.STATUS -->
+<!--   		FROM AUCTION A, ITEM I -->
+<!--   		WHERE A.AUCTIONid = I.ITEMID AND A.SELLERID = 'eunsoo123' -->
+<!--   </select>  -->
+
+<select id="getUserAuctionListByUserId" resultType="Auction">
+  	SELECT I.ITEMID AS "item.itemId",
+  			I.productId AS "item.productId" ,
+  			I.categoryId AS "item.categoryId",
+  			I.price AS "item.price",
+  			I.stock AS "item.stock",
+  			I.title AS "item.title",
+  			A.sellerId, A.participant, A.deadline, A.auctionId
+  	FROM AUCTION A, ITEM I
+  	WHERE A.AUCTIONID = I.ITEMID AND A.SELLERID=#{SELLERID}
+  </select> 
+ 
+  
+  <!-- 옥션아이디로 옥션 검색 -->
+   <select id="selectAuctionByAuctionId" resultType="Auction">
+  	SELECT I.ITEMID AS "item.itemId",
+  			I.productId AS "item.productId" ,
+  			I.categoryId AS "item.categoryId",
+  			I.price AS "item.price",
+  			I.stock AS "item.stock",
+  			I.title AS "item.title",
+  			I.description AS "item.description",
+  			A.sellerId, A.participant, A.deadline, A.auctionId
+  	FROM AUCTION A, ITEM I
+  	WHERE A.AUCTIONID = I.ITEMID AND A.auctionId=#{AUCTIONID}
+  </select> 
+  
+  <delete id="deleteMyAuctionItemByAutionId" parameterType="String">
+  	DELETE FROM AUCTION WHERE AUCTIONID=#{AUCTIONID}
+  </delete>
+  
+  <delete id="deleteItem" parameterType="String">
+  	DELETE FROM ITEM WHERE ITEMID=#{ITEMID}
+  </delete>
+  
+  <update id="updateAuctionItem" parameterType="Auction">
+		UPDATE (
+		  	SELECT I.ITEMID AS "item.itemId",
+  			I.productId AS "item.productId" ,
+  			I.categoryId AS "item.categoryId",
+  			I.price AS "item.price",
+  			I.stock AS "item.stock",
+  			I.title AS "item.title",
+  			I.description AS "item.description",
+  			A.sellerId, A.participant, A.deadline, A.auctionId
+  		FROM AUCTION A, ITEM I
+  		WHERE A.AUCTIONID = I.ITEMID AND A.auctionId=#{AUCTIONID}
+		)SET TITLE = #{item.title},
+		PRODUCTID = #{item.productId},
+		STOCK = #{item.stock},
+		DESCRIPTION = #{item.description}
+	</update>
+
+	<update id="updateMyAddAuctionItem" parameterType="Auction">
+		UPDATE AUCTION SET 
+	</update>
+</mapper>

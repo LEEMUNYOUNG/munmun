@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.ItemMapper">
+
+  <cache />
+  
+  <insert id="insertItem" parameterType="com.example.sproute.domain.Item">
+  	<selectKey keyProperty="itemId" resultType="String" order="BEFORE">
+  		SELECT SEQ_ITEM.nextval AS itemId FROM DUAL
+  	</selectKey>
+  	INSERT INTO ITEM(ITEMID, PRICE, STOCK, TITLE, DESCRIPTION, ADDDATE, CATEGORYID, PRODUCTID, IMGNAME)
+		VALUES(#{itemId}, #{price}, #{stock}, #{title}, #{description}, #{addDate}, #{categoryId}, #{productId}, #{imgName})
+  </insert>
+  
+  <select id="selectUsedItem" parameterType="String" resultType="Item">
+  	SELECT
+  		ITEMID,
+  		PRICE,
+  		STOCK,
+  		TITLE,
+  		DESCRIPTION,
+  		ADDDATE,
+  		CATEGORYID,
+  		PRODUCTID,
+  		IMGNAME
+  	FROM ITEM
+  	WHERE CATEGORYID = #{categoryId}
+  </select>
+  
+  <select id="selectAuctionItem" parameterType="String" resultType="Item">
+  	SELECT
+  		ITEMID,
+  		PRICE,
+  		STOCK,
+  		TITLE,
+  		DESCRIPTION,
+  		ADDDATE,
+  		CATEGORYID,
+  		PRODUCTID,
+  		IMGNAME
+  	FROM ITEM
+  	WHERE CATEGORYID = #{categoryId}
+  </select>
+
+  <select id="selectAllAuction" parameterType="String" resultType="Item">
+  	SELECT
+  		ITEMID,
+  		PRICE,
+  		STOCK,
+  		TITLE,
+  		DESCRIPTION,
+  		ADDDATE,
+  		CATEGORYID,
+  		PRODUCTID,
+  		IMGNAME
+  	FROM ITEM i, Auction a
+  	WHERE i.CATEGORYID = #{categoryId} AND a.AUCTIONID = i.ITEMID AND a.STATUS = 'OPEN'
+  </select>
+  
+  <select id="selectItem" parameterType="String" resultType="Item">
+  	SELECT
+  		ITEMID,
+  		PRICE,
+  		STOCK,
+  		TITLE,
+  		DESCRIPTION,
+  		ADDDATE,
+  		CATEGORYID,
+  		PRODUCTID,
+  		IMGNAME
+  	FROM ITEM
+  	WHERE ITEMID = #{itemId}
+  </select>
+  
+  <select id="selectItemByProductId" parameterType="String" resultType="Item">
+  	SELECT
+  		ITEMID,
+  		PRICE,
+  		STOCK,
+  		TITLE,
+  		DESCRIPTION,
+  		ADDDATE,
+  		CATEGORYID,
+  		PRODUCTID,
+  		IMGNAME
+  	FROM ITEM
+  	WHERE PRODUCTID = #{productId}
+  </select>
+  
+  <select id="selectUsedItemByUserId" parameterType="String" resultType="Item">
+  	SELECT 
+  		ITEMID,
+  		PRICE,
+  		STOCK,
+  		TITLE,
+  		DESCRIPTION,
+  		ADDDATE,
+  		CATEGORYID,
+  		PRODUCTID,
+  		IMGNAME 
+  	FROM ITEM, USED
+  	WHERE ITEMID = USEDID AND SELLERID = #{sellerId} AND CATEGORYID = 'used'
+  </select>
+  
+  <!-- auction용 -->
+  <select id="selectItemByProduct" parameterType="String" resultType="Item">
+	SELECT
+      ITEMID,
+      CATEGORYID,
+      PRICE,
+      STOCK,
+      TITLE,
+      DESCRIPTION,
+      ADDDATE,
+      PRODUCTID,
+      IMGNAME
+    FROM ITEM
+    WHERE CATEGORYID = #{param1} AND PRODUCTID = #{param2}
+  </select>
+  
+  <delete id="deleteUsedItem" parameterType="String">
+  	DELETE FROM ITEM
+  	WHERE ITEMID = #{itemId}
+  </delete>
+  
+  <update id="updateUsedItem" parameterType="ITEM">
+  	UPDATE ITEM
+  	SET PRICE = #{price}, STOCK = #{stock}, TITLE = #{title}, DESCRIPTION = #{description}
+  	WHERE ITEMID = #{itemId}
+  </update>
+  
+  <update id="updateAuctionItem" parameterType="ITEM">
+  	UPDATE ITEM
+  	SET STOCK = #{stock}, TITLE = #{title}, DESCRIPTION = #{description}, PRODUCTID = #{productId}
+  	WHERE ITEMID = #{itemId}
+  </update>
+  
+  <select id="getItemStock" resultType="int">
+    SELECT STOCK
+    FROM ITEM
+    WHERE ITEMID = #{itemId}
+  </select>
+  
+  <update id="updateStock">
+  UPDATE ITEM
+  SET STOCK = STOCK - #{param1}
+  WHERE ITEMID = #{param2}
+  </update>
+ </mapper>

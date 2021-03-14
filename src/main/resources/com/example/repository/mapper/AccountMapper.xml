@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.AccountMapper">
+
+  <cache />
+
+<!-- 회원 가입 -->
+   <insert id="insertMember" parameterType="com.example.sproute.domain.Account">
+   <selectKey keyProperty="id" resultType="int" order="BEFORE">
+      SELECT seq_userid.nextval AS id FROM DUAL
+   </selectKey>
+   INSERT INTO ACCOUNT(id, userId, password, email, address, phone, sex, name, birth )
+      VALUES(#{id}, #{userId}, #{password}, #{email}, #{address}, #{phone}, #{sex}, #{name},
+         TO_DATE(#{birth}, 'YYYY-MM-DD'))
+   </insert>
+
+<!-- 회원 목록 -->
+   <select id="selectMemberList" resultType="com.example.sproute.domain.Account">
+      SELECT ID, NAME, USERID, PHONE, EMAIL, TO_CHAR(BIRTH, 'YYYY-MM-DD')AS BIRTH, SEX
+      FROM ACCOUNT
+   </select>
+
+<!-- 특정 아이디 회원 정보 -->
+   <select id="selectMemberListbyUserId"
+      resultType="com.example.sproute.domain.Account" >
+      SELECT USERID, PASSWORD, EMAIL, ADDRESS, PHONE, SEX, NAME, TO_CHAR(BIRTH, 'YYYY-MM-DD')AS BIRTH
+      FROM ACCOUNT
+      WHERE USERID = #{userId}
+   </select>
+   
+<!-- 회원 정보 수정 -->
+   <update id="modifyMember" parameterType="com.example.sproute.domain.Account">
+      UPDATE ACCOUNT SET
+         PASSWORD = #{password},
+         NAME = #{name},
+         EMAIL = #{email},
+         ADDRESS = #{address},
+         PHONE = #{phone},
+         BIRTH= #{birth},
+         SEX = #{sex}
+      WHERE USERID = #{userId}
+   </update>
+
+</mapper>

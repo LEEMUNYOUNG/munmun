@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.MyPageBidMapper">
+  <cache />
+  
+   <resultMap id="bidingResultMap" type="Bidding">
+        <id column="bidId" jdbcType="VARCHAR" property="bidId"/>
+        <result column="auctionId" jdbcType="VARCHAR" property="itemId"/>
+      <result column="buyerId" jdbcType="VARCHAR" property="buyerId"/>
+       <result column="applyDate" jdbcType="TIMESTAMP" property="applyDate"/>
+      <result column="bCount" jdbcType="NUMERIC" property="bCount"/>
+      <result column="bidPrice" jdbcType="NUMERIC" property="price"/>
+         <association property="auction" column="itemId" javaType="Auction"> <!-- 처음테이블의 외래키를 column에 써라 -->
+            <id property="auctionId" column="auctionId"/> <!-- 여기서 값을 넣어줌??? A.AuctionId에서 다넣어주는듯??? -->
+            <result property="deadline" column="deadline"/>
+            <result property="participant" column="participant"/>
+            <result property="sellerId" column="sellerId"/>
+               <association property="item" column ="auctionId" javaType="Item">
+                  <id property="itemId" column="itemId"/>
+                  <result property="productId" column="productId"/>
+                  <result property="categoryId" column="categoryId"/>
+                  <result property="price" column="price"/>
+                  <result property="stock" column="stock"/>
+                  <result property="title" column="title"/>
+                  <result property="description" column="description"/>
+               </association>
+         </association>
+   </resultMap>
+   
+   <sql id="BidListColumns">
+      B.BIDID, A.AUCTIONID, B.BUYERID, B.APPLYDATE, B.BCOUNT, B.BIDPRICE, A.DEADLINE, A.PARTICIPANT, A.SELLERID, I.PRODUCTID, I.CATEGORYID, I.PRICE, I.STOCK, I.TITLE, I.DESCRIPTION
+   </sql>
+   
+   <!-- userId가 신청한 모든 입찰가져옴 (진행중입찰+종료된입찰) -->
+   <select id="getAllBiddingListByUserId" resultMap="bidingResultMap">
+      SELECT <include refid="BidListColumns"/>
+      FROM BID B, AUCTION A, ITEM I
+      WHERE B.AUCTIONID = A.AUCTIONID AND A.AUCTIONID = I.ITEMID AND B.BUYERID = #{buyerId}
+   </select>
+
+<!-- <select id="getAllBiddingListByUserId" resultType="Bidding"> -->
+<!--    SELECT B.BIDID, B.AUCTIONID AS ITEMID, B.BUYERID, B.APPLYDATE, B.BCOUNT, B.BIDPRICE AS PRICE, -->
+<!--          A.AUCTIONID AS "auction.auctionId", -->
+<!--          A.PARTICIPANT AS "auction.participant", -->
+<!--          A.SELLERID AS "auction.sellerId", -->
+<!--          A.DEADLINE AS "auction.deadline" -->
+<!--    FROM BID B, AUCTION A -->
+<!--    WHERE B.AUCTIONID = A.AUCTIONID AND B.BUYERID = #{buyerId} -->
+<!-- </select> -->
+
+   <!-- userId가 신청한 종료된 입찰리스트 -->
+   <select id="getEndBidList" resultMap="bidingResultMap">
+      SELECT <include refid="BidListColumns"/>
+      FROM BID B, AUCTION A, ITEM I
+      WHERE B.AUCTIONID = A.AUCTIONID AND A.AUCTIONID = I.ITEMID AND B.BUYERID = #{buyerId} AND A.STATUS = 'CLOSE'
+   </select>
+   <!-- AUCTION의 DAEDLINE 타입과 TO_CHAR 맞춰줘야함 이건 20/01/23 형식이라고 생각하고 작성한 것 -->
+   
+   <!-- userId가 신청한 진행중인 입찰리스트 -->
+   <select id="getBiddingList" resultMap="bidingResultMap">
+      SELECT <include refid="BidListColumns"/>
+      FROM BID B, AUCTION A, ITEM I
+      WHERE B.AUCTIONID = A.AUCTIONID AND A.AUCTIONID = I.ITEMID AND B.BUYERID = #{buyerId} AND A.STATUS = 'OPEN'
+   </select>
+   
+    <delete id="deleteMyBid">
+   	DELETE FROM BID WHERE BIDID=#{bidId}
+   </delete>
+</mapper>

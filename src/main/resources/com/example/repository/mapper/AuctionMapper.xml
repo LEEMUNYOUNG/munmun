@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.AuctionMapper">
+ 
+  <insert id="insertAuctionItem" parameterType="com.example.sproute.domain.Auction">  	
+   	INSERT INTO AUCTION(PARTICIPANT, SELLERID, AUCTIONID, DEADLINE, STATUS)
+		VALUES(#{participant}, #{sellerId}, #{item.itemId}, #{deadline}, #{status})
+  </insert>
+  
+  <insert id="insertBid" parameterType="Bidding">
+  	<selectKey keyProperty="bidId" resultType="String" order="BEFORE">
+  		SELECT SEQ_BID.nextval AS bidId FROM DUAL
+  	</selectKey>
+  	INSERT INTO BID(BUYERID, APPLYDATE, BCOUNT, BIDPRICE, BIDID, AUCTIONID)
+  		VALUES(#{buyerId}, #{applyDate}, #{bCount}, #{price}, #{bidId}, #{itemId})
+  </insert>
+  
+   <select id="selectAuction" parameterType="String" resultType="Auction">
+  	SELECT
+  		PARTICIPANT,
+  		SELLERID,
+  		AUCTIONID,
+  		DEADLINE
+  	FROM AUCTION
+  	WHERE AUCTIONID = #{itemId}
+  </select>
+  
+  <update id="updateAuction" parameterType="com.example.sproute.domain.Auction">
+  	UPDATE AUCTION
+  	SET DEADLINE = #{deadline}
+  	WHERE AUCTIONID = #{auctionId}
+  </update>
+  
+  <delete id="deleteAuction" parameterType="integer">
+  	DELETE FROM AUCTION
+  	WHERE AUCTIONID = #{itemId}
+  </delete>
+  
+  <update id="updateParticipantAfter" parameterType="String">
+  	UPDATE AUCTION
+  	SET PARTICIPANT = PARTICIPANT - 1
+  	WHERE AUCTIONID = #{auctionId}
+  </update>
+  
+  <!-- 입찰 수  -->
+  <select id="bidCount" parameterType="String" resultType="integer">
+  	SELECT COUNT(*)
+  	FROM BID
+  	WHERE AUCTIONID = #{auctionId}
+  </select>
+  
+  <select id="maxPriceAuction" parameterType="String" resultType="integer">
+  	SELECT MAX(BIDPRICE)
+  	FROM BID
+  	WHERE AUCTIONID = #{auctionId}
+  </select>
+  
+  <update id="updateParticipant" parameterType="String">
+  	UPDATE AUCTION
+  	SET PARTICIPANT = PARTICIPANT + 1
+  	WHERE AUCTIONID = #{itemId}
+  </update>
+  
+    <update id="closeAuction" parameterType="Date">
+    <![CDATA[
+     UPDATE AUCTION SET STATUS = 'CLOSE'   
+     WHERE TO_DATE(DEADLINE, 'yyyy-MM-dd HH24:mi') <= #{curTime}
+    ]]>
+  </update>
+  
+  <select id="selectAuctionId" resultType="String">
+  	SELECT AUCTIONID
+  	FROM BID
+  	WHERE BIDID = #{bidId}
+  </select>
+</mapper>

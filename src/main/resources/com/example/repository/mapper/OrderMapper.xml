@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.OrderMapper">
+	<insert id = "insertOrder" parameterType="Order">
+		<selectKey keyProperty="orderId" resultType="String" order="BEFORE">
+			SELECT SEQ_ORDER.nextval AS orderId FROM DUAL
+		</selectKey>
+		INSERT INTO ORDERITEM(ORDERID, ORDERDATE, SHIPADDRESS, ADDRESS, TOTALPRICE, CARDTYPE, CARDNUMBER, EXPIRYDATE, USERNAME, USERID, ITEMID)
+			VALUES(#{orderId}, #{orderDate}, #{shipAddress}, #{address}, #{totalPrice}, #{cardType}, #{cardNumber}, #{expireDate}, #{name}, #{userId}, #{itemId})
+	</insert>
+	
+	<select id = "selectOrderByUserId" parameterType="String" resultType="Order">
+		SELECT 
+			ORDERID, 
+			ORDERDATE, 
+			SHIPADDRESS, 
+			ADDRESS, 
+			TOTALPRICE, 
+			CARDTYPE, 
+			CARDNUMBER, 
+			EXPIRYDATE, 
+			USERNAME, 
+			USERID, 
+			ITEMID
+		FROM ORDERITEM
+		WHERE USERID = #{userId}
+		ORDER BY ORDERDATE DESC
+	</select>
+	
+	<select id = "selectOrderByOrderDate" parameterType="com.example.sproute.domain.Order" resultType ="Order">
+		SELECT 
+			ORDERID, 
+			ORDERDATE, 
+			SHIPADDRESS, 
+			ADDRESS, 
+			TOTALPRICE, 
+			CARDTYPE, 
+			CARDNUMBER, 
+			EXPIRYDATE, 
+			USERNAME, 
+			USERID, 
+			ITEMID
+		FROM ORDERITEM
+		WHERE ORDERDATE = #{orderDate}, USERID = #{userId}
+	</select>
+	
+	<delete id = "deleteOrder" parameterType="String">
+		DELETE FROM ORDERITEM WHERE ORDERID = #{orderId}
+	</delete>
+</mapper>

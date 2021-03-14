@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       	http://www.springframework.org/schema/beans/spring-beans.xsd
+       	http://www.springframework.org/schema/context
+       	http://www.springframework.org/schema/context/spring-context.xsd
+       	http://www.springframework.org/schema/mvc 				
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+		
+		<context:component-scan base-package="com.example.sproute.controller" />
+		
+		<mvc:annotation-driven />
+		
+		<mvc:default-servlet-handler />
+		
+		<bean id="viewResolver"
+			class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+			<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+			<property name="prefix" value="/WEB-INF/view/"/>
+			<property name="suffix" value=".jsp"/>
+		</bean>
+		
+		<!-- /enter/step1이 들어오면 step1.jsp로 이동 -->
+		<mvc:view-controller path="/" view-name="index"/>
+		
+		<!-- 오류 메시지 설정 -->
+		<bean id="messageSource"
+			class="org.springframework.context.support.ResourceBundleMessageSource">
+			<property name="basenames">
+				<list>
+					<value>messages.validation</value>
+					<value>messages.label</value>
+				</list>
+			</property>
+			<property name="defaultEncoding" value="UTF-8" />
+		</bean>
+		
+		<bean id="multipartResolver"
+			class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		</bean>
+		
+		 <!-- 로그인 인터셉터 : 상품등록 시  -->
+       <mvc:interceptors>
+         <mvc:interceptor>
+            <mvc:mapping path="/shop/addUsedSumitted" />
+            <mvc:mapping path="/shop/addAuctionItem" />
+            <mvc:mapping path="/shop/reviewForm" />
+            <mvc:mapping path="/shop/newOrder.do" />
+            <mvc:mapping path="/shop/addBidForm" />
+            <bean class="com.example.sproute.interceptor.LoginInterceptor" />
+         </mvc:interceptor>
+      </mvc:interceptors> 
+</beans>
